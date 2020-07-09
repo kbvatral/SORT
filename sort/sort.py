@@ -9,6 +9,7 @@ class SORT(object):
         self.max_age = max_age
         self.min_hits = min_hits
         self.tracklet_counter = 1
+        self.frames = 0
 
         self.round1_iou = round1_iou
         self.round2_iou = round2_iou
@@ -35,6 +36,7 @@ class SORT(object):
         self.trackers += new_trackers
 
     def predict(self):
+        self.frames += 1
         for trk in self.trackers:
             trk.predict()
         
@@ -65,7 +67,7 @@ class SORT(object):
         ret = []
         for trk in self.trackers:
             # If alive and not in probation, add it to the return
-            if not trk.in_probation:
+            if not trk.in_probation or self.frames < self.min_hits:
                 d = trk.get_state()
                 ret.append((d, trk.id))
 
